@@ -1,43 +1,42 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import useIsomorphicLayoutEffect from '../utils/useIsomorphicLayoutEffect'
 import gsap from 'gsap-trial'
 import ScrollTrigger from 'gsap-trial/dist/ScrollTrigger'
-import { SmootherContext } from '../utils/SmootherContext'
 import ScrollSmoother from 'gsap-trial/dist/ScrollSmoother'
 
 export default function SmoothScroller({ children, cursor }) {
 
-  const [smoother, setSmoother] = useState()
+  const smoother = useRef()
+  const ctx = useRef()
+  const pathname = usePathname()
 
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
 
-    const gsapCtx = gsap.context(() => {
+    ctx.current = gsap.context(() => {
 
-      const instance = ScrollSmoother.create({
+      smoother.current = ScrollSmoother.create({
         smooth: 1,
         normalizeScroll: true,
         ignoreMobileResize: true,
         effects: true,
       })
-      setSmoother(instance)
 
     })
 
     return () => {
-      gsapCtx.revert()
+      ctx.current.revert()
     }
-  }, [])
+  }, [pathname])
 
   return (
-    <SmootherContext.Provider value={smoother}>
-      <div id="smooth-wrapper">
-        <div id="smooth-content" className="will-change-transform">
-          {children}
-        </div>
+    <div id="smooth-wrapper">
+      <div id="smooth-content" className="will-change-transform">
+        {children}
       </div>
-    </SmootherContext.Provider>
+    </div>
   )
 }

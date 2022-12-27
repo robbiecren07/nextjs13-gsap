@@ -1,3 +1,4 @@
+import Providers from './providers'
 import { Inter } from '@next/font/google'
 import Header from '../../components/Header'
 import './globals.css'
@@ -14,8 +15,10 @@ export default function RootLayout({ children }) {
       */}
       <head />
       <body>
-        <Header />
-        {children}
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   )
